@@ -9,29 +9,41 @@
 import UIKit
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-
-
-
+final class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        NetWorkMonitor.shared.startMonitoring()
+        setRoot(tabBarViewController())
         return true
     }
-
-    // MARK: UISceneSession Lifecycle
-
-    func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
-        // Called when a new scene session is being created.
-        // Use this method to select a configuration to create the new scene with.
-        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
+    
+    private func tabBarViewController() -> UITabBarController {
+        let tabBar = UITabBarController()
+        let itunesVC = musicViewController()
+        let downloadsVC = musicViewController()
+        downloadsVC.viewOption = .downloads
+        //UserDefaults.standard.set(nil, forKey: "DownloadedMusic")
+        //UserDefaults.standard.set(nil, forKey: "DownloadedImage")
+        itunesVC.tabBarItem = UITabBarItem(tabBarSystemItem: .search, tag: 0)
+        itunesVC.title = "Itunes"
+        downloadsVC.tabBarItem = UITabBarItem(tabBarSystemItem: .downloads, tag: 1)
+        downloadsVC.title = "Downloads"
+        tabBar.viewControllers = [itunesVC, downloadsVC]
+        return tabBar
     }
-
-    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        // Called when the user discards a scene session.
-        // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
-        // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
+    
+    private func musicViewController() -> MusicViewController {
+        let storyBoard = UIStoryboard(name: "Main", bundle: nil)
+        let musicViewController = storyBoard.instantiateViewController(
+            identifier: MusicViewController.identifier) as! MusicViewController
+        return musicViewController
     }
-
-
+    
+    private func setRoot(_ vc: UIViewController) {
+        window = UIWindow(frame: UIScreen.main.bounds)
+        window?.rootViewController = vc
+        window?.makeKeyAndVisible()
+    }
 }
 
